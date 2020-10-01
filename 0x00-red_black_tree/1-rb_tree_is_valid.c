@@ -70,9 +70,9 @@ int rb_tree_red_is_valid(const rb_tree_t *tree)
  */
 int rb_tree_is_valid(const rb_tree_t *tree)
 {
-	if (!tree || tree->color != BLACK)
-		return (0);
-
-	return (rb_tree_black_height_max(tree) == rb_tree_black_height_min(tree) &&
-		rb_tree_red_is_valid(tree));
+	return (tree &&
+		tree->color == BLACK &&
+		rb_tree_red_is_valid(tree->left) &&
+		rb_tree_red_is_valid(tree->right) &&
+		rb_tree_black_height_max(tree) == rb_tree_black_height_min(tree));
 }
