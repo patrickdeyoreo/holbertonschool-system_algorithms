@@ -1,0 +1,18 @@
+# temporary files
+*~
+*.sw[op]
+
+# python bytecode
+*.py[cod]
+
+# object files
+*.o
+*.so
+
+# tag files
+tags
+.tags
+
+# index files
+.DS_Store
+.vscode
