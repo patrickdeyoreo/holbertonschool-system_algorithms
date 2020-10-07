@@ -1,5 +1,3 @@
-#include <stdbool.h>
-
 #include "rb_trees.h"
 
 
@@ -108,6 +106,7 @@ static int rb_tree_rotate_right_complex(rb_tree_t **tree)
 	return (2);
 }
 
+
 /**
  * rb_tree_recolor - color a node red and its children black
  *
@@ -123,6 +122,7 @@ static int rb_tree_recolor(rb_tree_t **tree)
 
 	return (3);
 }
+
 
 /**
  * _rb_tree_insert - insert a value into a red-black tree

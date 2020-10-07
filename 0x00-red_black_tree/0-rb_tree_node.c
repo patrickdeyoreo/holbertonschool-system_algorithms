@@ -1,5 +1,6 @@
 #include "rb_trees.h"
 
+
 /**
  * rb_tree_node - create a red-black tree node
  * @parent: pointer to the parent node of the node to create

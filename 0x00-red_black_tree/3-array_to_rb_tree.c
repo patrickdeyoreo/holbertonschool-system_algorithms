@@ -1,5 +1,6 @@
 #include "rb_trees.h"
 
+
 /**
  * array_to_rb_tree - create a red-black tree from an array
  *

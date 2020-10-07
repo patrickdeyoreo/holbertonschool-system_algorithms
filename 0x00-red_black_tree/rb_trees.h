@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 /**
  * enum rb_color_e - possible red-black tree colors
  *
@@ -18,21 +19,6 @@ typedef enum rb_color_e
 	DOUBLE_BLACK
 } rb_color_t;
 
-/**
- * enum rb_state_e - possible red-black tree states
- *
- * @ROTATE_R_SUBTREE: 0 -> right subtree requires rotation
- * @ROTATE_L_SUBTREE: 1 -> left subtree requires rotation
- * @BALANCED_ROOT_RED: 2 -> subtree is balanced with a red root
- * @BALANCED_ROOT_BLACK: 3 -> subtree is balanced with a black root
- */
-typedef enum rb_state_e
-{
-	ROTATE_R_SUBTREE = 0,
-	ROTATE_L_SUBTREE,
-	BALANCED_ROOT_RED,
-	BALANCED_ROOT_BLACK
-} rb_state_t;
 
 /**
  * struct rb_tree_s - red-black tree node structure
@@ -52,10 +38,12 @@ typedef struct rb_tree_s
 	struct rb_tree_s *right;
 } rb_tree_t;
 
+
 rb_tree_t *rb_tree_node(rb_tree_t *parent, int value, rb_color_t color);
 int rb_tree_is_valid(const rb_tree_t *tree);
 rb_tree_t *rb_tree_insert(rb_tree_t **tree, int value);
 rb_tree_t *array_to_rb_tree(int *array, size_t size);
 rb_tree_t *rb_tree_remove(rb_tree_t *root, int n);
+
 
 #endif /* _RB_TREES_H_ */
