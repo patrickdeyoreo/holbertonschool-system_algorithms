@@ -7,8 +7,10 @@
  * rb_tree_rotate_left - perform a left rotation
  *
  * @tree: double pointer to the root of a tree
+ *
+ * Return: Always 2
  */
-static void rb_tree_rotate_left(rb_tree_t **tree)
+static int rb_tree_rotate_left(rb_tree_t **tree)
 {
 	(*tree) = (*tree)->right;
 	(*tree)->parent->right = (*tree)->left;
@@ -20,6 +22,8 @@ static void rb_tree_rotate_left(rb_tree_t **tree)
 
 	(*tree)->color = BLACK;
 	(*tree)->left->color = RED;
+
+	return (2);
 }
 
 
@@ -27,8 +31,10 @@ static void rb_tree_rotate_left(rb_tree_t **tree)
  * rb_tree_rotate_left_complex - perform a complex left rotation
  *
  * @tree: double pointer to the root of a tree
+ *
+ * Return: Always 2
  */
-static void rb_tree_rotate_left_complex(rb_tree_t **tree)
+static int rb_tree_rotate_left_complex(rb_tree_t **tree)
 {
 	(*tree) = (*tree)->right->left;
 	(*tree)->parent->left = (*tree)->right;
@@ -45,6 +51,8 @@ static void rb_tree_rotate_left_complex(rb_tree_t **tree)
 
 	(*tree)->color = BLACK;
 	(*tree)->left->color = RED;
+
+	return (2);
 }
 
 
@@ -52,8 +60,10 @@ static void rb_tree_rotate_left_complex(rb_tree_t **tree)
  * rb_tree_rotate_right - perform a right rotation
  *
  * @tree: double pointer to the root of a tree
+ *
+ * Return: Always 2
  */
-static void rb_tree_rotate_right(rb_tree_t **tree)
+static int rb_tree_rotate_right(rb_tree_t **tree)
 {
 	(*tree) = (*tree)->left;
 	(*tree)->parent->left = (*tree)->right;
@@ -65,6 +75,8 @@ static void rb_tree_rotate_right(rb_tree_t **tree)
 
 	(*tree)->color = BLACK;
 	(*tree)->right->color = RED;
+
+	return (2);
 }
 
 
@@ -72,8 +84,10 @@ static void rb_tree_rotate_right(rb_tree_t **tree)
  * rb_tree_rotate_right_complex - perform a complex right rotation
  *
  * @tree: double pointer to the root of a tree
+ *
+ * Return: Always 2
  */
-static void rb_tree_rotate_right_complex(rb_tree_t **tree)
+static int rb_tree_rotate_right_complex(rb_tree_t **tree)
 {
 	(*tree) = (*tree)->left->right;
 	(*tree)->parent->right = (*tree)->left;
@@ -90,8 +104,25 @@ static void rb_tree_rotate_right_complex(rb_tree_t **tree)
 
 	(*tree)->color = BLACK;
 	(*tree)->right->color = RED;
+
+	return (2);
 }
 
+/**
+ * rb_tree_recolor - color a node red and its children black
+ *
+ * @tree: double pointer to the root of a tree
+ *
+ * Return: Always 3
+ */
+static int rb_tree_recolor(rb_tree_t **tree)
+{
+	(*tree)->color = RED;
+	(*tree)->left->color = BLACK;
+	(*tree)->right->color = BLACK;
+
+	return (3);
+}
 
 /**
  * _rb_tree_insert - insert a value into a red-black tree
@@ -121,32 +152,20 @@ int _rb_tree_insert(
 			case 0:
 				if ((*tree)->left && (*tree)->right
 					&& (*tree)->left->color == RED && (*tree)->right->color == RED)
-				{
-					(*tree)->color = RED;
-					(*tree)->left->color = BLACK;
-					(*tree)->right->color = BLACK;
-					return (3);
-				}
-				if (value < (*tree)->n)
-					rb_tree_rotate_right_complex(tree);
-				else
-					rb_tree_rotate_left(tree);
-				return (2);
+					return (rb_tree_recolor(tree));
+
+				return (value < (*tree)->n
+					? rb_tree_rotate_right_complex(tree)
+					: rb_tree_rotate_left(tree));
 
 			case 1:
 				if ((*tree)->left && (*tree)->right
 					&& (*tree)->left->color == RED && (*tree)->right->color == RED)
-				{
-					(*tree)->color = RED;
-					(*tree)->left->color = BLACK;
-					(*tree)->right->color = BLACK;
-					return (3);
-				}
-				if (value < (*tree)->n)
-					rb_tree_rotate_right(tree);
-				else
-					rb_tree_rotate_left_complex(tree);
-				return (2);
+					return (rb_tree_recolor(tree));
+
+				return (value < (*tree)->n
+					? rb_tree_rotate_right(tree)
+					: rb_tree_rotate_left_complex(tree));
 
 			case 2:
 				return ((*tree)->color == BLACK ? 2 : 3);
