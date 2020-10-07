@@ -5,11 +5,11 @@
 #include <stdlib.h>
 
 /**
- * enum rb_color_e - Possible color of a Red-Black tree
+ * enum rb_color_e - possible red-black tree colors
  *
- * @RED: 0 -> Red node
- * @BLACK: 1 -> Black node
- * @DOUBLE_BLACK: 2 -> Double-black node (used for deletion)
+ * @RED: 0 -> red node
+ * @BLACK: 1 -> black node
+ * @DOUBLE_BLACK: 2 -> double-black node (used for deletion)
  */
 typedef enum rb_color_e
 {
@@ -19,13 +19,29 @@ typedef enum rb_color_e
 } rb_color_t;
 
 /**
- * struct rb_tree_s - Red-Black tree node structure
+ * enum rb_state_e - possible red-black tree states
+ *
+ * @ROTATE_R_SUBTREE: 0 -> right subtree requires rotation
+ * @ROTATE_L_SUBTREE: 1 -> left subtree requires rotation
+ * @BALANCED_ROOT_RED: 2 -> subtree is balanced with a red root
+ * @BALANCED_ROOT_BLACK: 3 -> subtree is balanced with a black root
+ */
+typedef enum rb_state_e
+{
+	ROTATE_R_SUBTREE = 0,
+	ROTATE_L_SUBTREE,
+	BALANCED_ROOT_RED,
+	BALANCED_ROOT_BLACK
+} rb_state_t;
+
+/**
+ * struct rb_tree_s - red-black tree node structure
  *
  * @n: Integer stored in the node
- * @parent: Pointer to the parent node
- * @left: Pointer to the left child node
- * @right: Pointer to the right child node
- * @color: Color of the node (RED or BLACK)
+ * @parent: pointer to the parent node
+ * @left: pointer to the left child node
+ * @right: pointer to the right child node
+ * @color: color of the node (RED or BLACK)
  */
 typedef struct rb_tree_s
 {
