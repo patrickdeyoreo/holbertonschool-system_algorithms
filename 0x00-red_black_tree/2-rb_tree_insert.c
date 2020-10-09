@@ -138,7 +138,7 @@ static int rb_tree_recolor(rb_tree_t **tree)
  * 2 if subtree is balanced w/ black root,
  * 3 if subtree is balanced w/ red root
  */
-int _rb_tree_insert(
+static int _rb_tree_insert(
 	rb_tree_t **tree, rb_tree_t *parent, int value, rb_tree_t **dest)
 {
 	if (*tree)
