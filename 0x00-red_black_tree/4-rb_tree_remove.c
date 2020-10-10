@@ -145,8 +145,8 @@ static int _rb_tree_remove(rb_tree_t **tree, int value)
 			return (-1);
 		}
 		switch (value < (*tree)->n
-			? _rb_tree_insert(&(*tree)->left, *tree, value, dest)
-			: _rb_tree_insert(&(*tree)->right, *tree, value, dest))
+			? _rb_tree_remove(&(*tree)->left, value)
+			: _rb_tree_remove(&(*tree)->right, value))
 		{
 		case -1:
 			return (-1);
