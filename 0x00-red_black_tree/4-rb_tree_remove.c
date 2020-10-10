@@ -108,41 +108,37 @@ static int rb_tree_rotate_right_complex(rb_tree_t **tree)
 
 
 /**
- * rb_tree_recolor - color a node red and its children black
+ * rb_tree_in_order_successor - replace a node with its in-order successor
  *
- * @tree: double pointer to the root of a tree
+ * @tree: pointer to the node to replace
  *
  * Return: Always 3
  */
-static int rb_tree_recolor(rb_tree_t **tree)
+static int rb_tree_in_order_successor(rb_tree_t **tree)
 {
-	(*tree)->color = RED;
-	(*tree)->left->color = BLACK;
-	(*tree)->right->color = BLACK;
+	rb_tree_t *successor = *tree;
 
-	return (3);
-}
-
-
-/**
- * rb_tree_in_order_successor - find the in-order successor of a red-black node
- *
- * @node: pointer to the node for which to find the in-order successor
- *
- * Return: pointer to the in-order successor of node
- */
-static rb_tree_t *rb_tree_in_order_successor(rb_tree_t *node)
-{
-	if (node)
+	if (successor)
 	{
-		node = node->right;
-		if (node)
+		successor = successor->right;
+		if (successor)
 		{
-			while (node->left)
-				node = node->left;
+			while (successor->left)
+				successor = successor->left;
+			successor->left = (*tree)->left;
+			if (successor->left)
+				successor->left->parent = successor;
+			if (successor != (*tree)->right)
+				successor->right = (*tree)->right;
+			if (successor->right)
+				successor->right->parent = successor;
+			successor->parent = (*tree)->parent;
 		}
 	}
-	return (node);
+	free(*tree);
+	(*tree) = successor;
+
+	return (3);
 }
 
 /**
@@ -159,27 +155,11 @@ static rb_tree_t *rb_tree_in_order_successor(rb_tree_t *node)
  */
 static int _rb_tree_remove(rb_tree_t **tree, int value)
 {
-	rb_tree_t *successor = NULL;
-
 	if (*tree)
 	{
 		if (value == (*tree)->n)
 		{
-			successor = rb_tree_in_order_successor(*tree);
-			if (successor)
-			{
-				successor->left = (*tree)->left;
-				if (successor->left)
-					successor->left->parent = successor;
-				if ((*tree)->right != successor)
-					successor->right = (*tree)->right;
-				if (successor->right)
-					successor->right->parent = successor;
-				successor->parent = (*tree)->parent;
-			}
-			free(*tree);
-			(*tree) = successor;
-			return (3);
+			return (rb_tree_in_order_successor(tree));
 		}
 		switch (value < (*tree)->n
 			? _rb_tree_remove(&(*tree)->left, value)
@@ -187,24 +167,20 @@ static int _rb_tree_remove(rb_tree_t **tree, int value)
 		{
 		case -1:
 			return (-1);
+
 		case 0:
-			if ((*tree)->left && (*tree)->right
-				&& (*tree)->left->color == RED
-				&& (*tree)->right->color == RED)
-				return (rb_tree_recolor(tree));
 			return (value < (*tree)->n
 				? (rb_tree_rotate_right_complex(tree))
 				: (rb_tree_rotate_left(tree)));
+
 		case 1:
-			if ((*tree)->left && (*tree)->right
-				&& (*tree)->left->color == RED
-				&& (*tree)->right->color == RED)
-				return (rb_tree_recolor(tree));
 			return (value < (*tree)->n
 				? (rb_tree_rotate_right(tree))
 				: (rb_tree_rotate_left_complex(tree)));
+
 		case 2:
 			return ((*tree)->color == BLACK ? 2 : 3);
+
 		case 3:
 			return ((*tree)->color == BLACK ? 2 : value < (*tree)->n);
 		}
