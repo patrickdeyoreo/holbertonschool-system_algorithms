@@ -125,7 +125,7 @@ static int rb_tree_recolor(rb_tree_t **tree)
 
 
 /**
- * _rb_tree_insert - insert a value into a red-black tree
+ * _rb_tree_remove - remove a value from a red-black tree
  *
  * @tree: double pointer to the root of a tree
  * @value: value to remove
