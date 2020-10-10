@@ -128,58 +128,53 @@ static int rb_tree_recolor(rb_tree_t **tree)
  * _rb_tree_insert - insert a value into a red-black tree
  *
  * @tree: double pointer to the root of a tree
- * @value: value to insert
- * @parent: pointer to the parent of the node pointed to by tree
- * @dest: double pointer to the destination to point to the new node
+ * @value: value to remove
  *
- * Return: -1 if insertion fails,
+ * Return: -1 if removal fails,
  * 0 if right subtree requires adjustment,
  * 1 if left subtree requires adjustment,
  * 2 if subtree is balanced w/ black root,
  * 3 if subtree is balanced w/ red root
  */
-static int _rb_tree_insert(
-	rb_tree_t **tree, rb_tree_t *parent, int value, rb_tree_t **dest)
+static int _rb_tree_remove(rb_tree_t **tree, int value)
 {
 	if (*tree)
 	{
-		if (value != (*tree)->n)
+		if (value == (*tree)->n)
 		{
-			switch (value < (*tree)->n
-				? _rb_tree_insert(&(*tree)->left, *tree, value, dest)
-				: _rb_tree_insert(&(*tree)->right, *tree, value, dest))
-			{
-			case 0:
-				if ((*tree)->left && (*tree)->right
-					&& (*tree)->left->color == RED && (*tree)->right->color == RED)
-					return (rb_tree_recolor(tree));
-
-				return (value < (*tree)->n
-					? rb_tree_rotate_right_complex(tree)
-					: rb_tree_rotate_left(tree));
-
-			case 1:
-				if ((*tree)->left && (*tree)->right
-					&& (*tree)->left->color == RED && (*tree)->right->color == RED)
-					return (rb_tree_recolor(tree));
-
-				return (value < (*tree)->n
-					? rb_tree_rotate_right(tree)
-					: rb_tree_rotate_left_complex(tree));
-
-			case 2:
-				return ((*tree)->color == BLACK ? 2 : 3);
-
-			case 3:
-				return ((*tree)->color == BLACK ? 2 : value < (*tree)->n);
-			}
+			return (-1);
 		}
-		return (-1);
+		switch (value < (*tree)->n
+			? _rb_tree_insert(&(*tree)->left, *tree, value, dest)
+			: _rb_tree_insert(&(*tree)->right, *tree, value, dest))
+		{
+		case -1:
+			return (-1);
+		case 0:
+			if ((*tree)->left && (*tree)->right
+				&& (*tree)->left->color == RED
+				&& (*tree)->right->color == RED)
+				return (rb_tree_recolor(tree));
+
+			return (value < (*tree)->n
+				? (rb_tree_rotate_right_complex(tree))
+				: (rb_tree_rotate_left(tree)));
+		case 1:
+			if ((*tree)->left && (*tree)->right
+				&& (*tree)->left->color == RED
+				&& (*tree)->right->color == RED)
+				return (rb_tree_recolor(tree));
+
+			return (value < (*tree)->n
+				? (rb_tree_rotate_right(tree))
+				: (rb_tree_rotate_left_complex(tree)));
+		case 2:
+			return ((*tree)->color == BLACK ? 2 : 3);
+		case 3:
+			return ((*tree)->color == BLACK ? 2 : value < (*tree)->n);
+		}
 	}
-	(*tree) = rb_tree_node(parent, value, RED);
-	if (dest)
-		(*dest) = (*tree);
-	return ((*tree) ? 3 : -1);
+	return (-1);
 }
 
 
@@ -193,8 +188,7 @@ static int _rb_tree_insert(
  */
 rb_tree_t *rb_tree_remove(rb_tree_t *root, int n)
 {
-	(void) root;
-	(void) n;
+	_rb_tree_remove(&root, n);
 
 	return (root);
 }

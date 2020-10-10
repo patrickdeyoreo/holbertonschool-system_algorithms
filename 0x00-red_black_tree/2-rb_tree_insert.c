@@ -143,38 +143,39 @@ static int _rb_tree_insert(
 {
 	if (*tree)
 	{
-		if (value != (*tree)->n)
+		if (value == (*tree)->n)
 		{
-			switch (value < (*tree)->n
-				? _rb_tree_insert(&(*tree)->left, *tree, value, dest)
-				: _rb_tree_insert(&(*tree)->right, *tree, value, dest))
-			{
-			case 0:
-				if ((*tree)->left && (*tree)->right
-					&& (*tree)->left->color == RED && (*tree)->right->color == RED)
-					return (rb_tree_recolor(tree));
-
-				return (value < (*tree)->n
-					? rb_tree_rotate_right_complex(tree)
-					: rb_tree_rotate_left(tree));
-
-			case 1:
-				if ((*tree)->left && (*tree)->right
-					&& (*tree)->left->color == RED && (*tree)->right->color == RED)
-					return (rb_tree_recolor(tree));
-
-				return (value < (*tree)->n
-					? rb_tree_rotate_right(tree)
-					: rb_tree_rotate_left_complex(tree));
-
-			case 2:
-				return ((*tree)->color == BLACK ? 2 : 3);
-
-			case 3:
-				return ((*tree)->color == BLACK ? 2 : value < (*tree)->n);
-			}
+			return (-1);
 		}
-		return (-1);
+		switch (value < (*tree)->n
+			? _rb_tree_insert(&(*tree)->left, *tree, value, dest)
+			: _rb_tree_insert(&(*tree)->right, *tree, value, dest))
+		{
+		case -1:
+			return (-1);
+		case 0:
+			if ((*tree)->left && (*tree)->right
+				&& (*tree)->left->color == RED
+				&& (*tree)->right->color == RED)
+				return (rb_tree_recolor(tree));
+
+			return (value < (*tree)->n
+				? rb_tree_rotate_right_complex(tree)
+				: rb_tree_rotate_left(tree));
+		case 1:
+			if ((*tree)->left && (*tree)->right
+				&& (*tree)->left->color == RED
+				&& (*tree)->right->color == RED)
+				return (rb_tree_recolor(tree));
+
+			return (value < (*tree)->n
+				? rb_tree_rotate_right(tree)
+				: rb_tree_rotate_left_complex(tree));
+		case 2:
+			return ((*tree)->color == BLACK ? 2 : 3);
+		case 3:
+			return ((*tree)->color == BLACK ? 2 : value < (*tree)->n);
+		}
 	}
 	(*tree) = rb_tree_node(parent, value, RED);
 	if (dest)
