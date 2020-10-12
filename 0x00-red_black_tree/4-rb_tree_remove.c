@@ -1,25 +1,6 @@
 #include "rb_trees.h"
 
 
-#define HAS_RED_CHILDREN(node) (	\
-	(node)				\
-	&& (node)->left			\
-	&& (node)->right		\
-	&& (node)->left->color == RED	\
-	&& (node)->right->color == RED	\
-)
-
-
-#define COLOR_CHILDREN_BLACK(node) (	\
-	(node)				\
-	? (node)->color = RED		\
-	, (node)->left->color = BLACK	\
-	, (node)->right->color = BLACK	\
-	, 3				\
-	: 0				\
-)
-
-
 /**
  * rb_tree_rotate_left - perform a left rotation
  *
@@ -266,23 +247,93 @@ static rb_tree_t *_rb_tree_remove(rb_tree_t **tree, int n)
 		{
 			if (temporary == temporary->parent->left)
 			{
-				tree = &temporary->parent->left;
+				temporary = temporary->parent;
+				if (temporary->parent)
+				{
+					if (temporary == temporary->parent->left)
+					{
+						temporary = temporary->parent;
+						if (temporary->parent)
+						{
+							if (temporary == temporary->parent->left)
+								rb_tree_rotate_right(&temporary->parent->left);
+							else
+								rb_tree_rotate_right(&temporary->parent->right);
+						}
+						else
+						{
+							rb_tree_rotate_right(&temporary);
+						}
+					}
+					else
+					{
+						temporary = temporary->parent;
+						if (temporary->parent)
+						{
+							if (temporary == temporary->parent->left)
+								rb_tree_rotate_left_complex(&temporary->parent->left);
+							else
+								rb_tree_rotate_left_complex(&temporary->parent->right);
+						}
+						else
+						{
+							rb_tree_rotate_left_complex(&temporary);
+						}
+					}
+				}
+				else
+				{
+					temporary->color = BLACK;
+					temporary->left->color = RED;
+				}
 			}
 			else
 			{
-				tree = &temporary->parent->right;
-			}
-			if (temporary->left)
-			{
-				if (temporary->left->left)
-					rb_tree_rotate_right(tree);
-				else if (temporary->left->right)
-					rb_tree_rotate_right_complex(tree);
+				temporary = temporary->parent;
+				if (temporary->parent)
+				{
+					if (temporary == temporary->parent->left)
+					{
+						temporary = temporary->parent;
+						if (temporary->parent)
+						{
+							if (temporary == temporary->parent->left)
+								rb_tree_rotate_right_complex(&temporary->parent->left);
+							else
+								rb_tree_rotate_right_complex(&temporary->parent->right);
+						}
+						else
+						{
+							rb_tree_rotate_right_complex(&temporary);
+						}
+					}
+					else
+					{
+						temporary = temporary->parent;
+						if (temporary->parent)
+						{
+							if (temporary == temporary->parent->left)
+								rb_tree_rotate_left(&temporary->parent->left);
+							else
+								rb_tree_rotate_left(&temporary->parent->right);
+						}
+						else
+						{
+							rb_tree_rotate_left(&temporary);
+						}
+					}
+				}
 				else
-					temporary->left->color = RED;
+				{
+					temporary->color = BLACK;
+					temporary->right->color = RED;
+				}
 			}
 		}
-		temporary->color = BLACK;
+		else
+		{
+			temporary->color = BLACK;
+		}
 	}
 	free(successor);
 	if (temporary)
