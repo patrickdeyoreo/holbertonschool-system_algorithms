@@ -304,5 +304,5 @@ static rb_tree_t *_rb_tree_remove(rb_tree_t **tree, int n)
  */
 rb_tree_t *rb_tree_remove(rb_tree_t *root, int n)
 {
-	return _rb_tree_remove(&root, n);
+	return (_rb_tree_remove(&root, n));
 }
