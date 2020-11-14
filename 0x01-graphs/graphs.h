@@ -16,6 +16,7 @@ typedef enum edge_type_e
 	BIDIRECTIONAL
 } edge_type_t;
 
+
 /**
  * struct edge_s - node in a linked list of edges for a given vertex
  *
@@ -47,6 +48,7 @@ typedef struct vertex_s
 	struct vertex_s	*next;
 } vertex_t;
 
+
 /**
  * struct graph_s - representation of a graph using an adjacency linked list
  *
@@ -61,13 +63,18 @@ typedef struct graph_s
 
 
 graph_t *graph_create(void);
+
+vertex_t *graph_add_vertex(
+	graph_t *graph, const char *str);
+int graph_add_edge(
+	graph_t *graph, const char *src, const char *dest, edge_type_t type);
+
 void graph_delete(graph_t *graph);
-vertex_t *graph_add_vertex(graph_t *, const char *);
-int graph_add_edge(graph_t *, const char *, const char *, edge_type_t);
+
 size_t depth_first_traverse(
-	const graph_t *, void (*)(const vertex_t *, size_t));
+	const graph_t *graph, void (*action)(const vertex_t *, size_t));
 size_t breadth_first_traverse(
-	const graph_t *, void (*)(const vertex_t *, size_t));
+	const graph_t *graph, void (*action)(const vertex_t *, size_t));
 
 void graph_display(const graph_t *);
 
