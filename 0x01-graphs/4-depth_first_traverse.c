@@ -19,9 +19,11 @@ static size_t dft(
 	size_t max_depth = 0;
 	size_t new_depth = 0;
 
-	if (vertex && !(table[vertex->index / 8] & (1 << (vertex->index % 8))))
+	if (vertex && !(table[vertex->index / sizeof(*table)] &
+			(1 << vertex->index % sizeof(*table))))
 	{
-		table[vertex->index / 8] |= (1U << (vertex->index % 8));
+		table[vertex->index / sizeof(*table)] |=
+			(1 << vertex->index % sizeof(*table));
 		action(vertex, depth);
 		max_depth = depth;
 		for (edge = vertex->edges; edge; edge = edge->next)
@@ -51,7 +53,8 @@ size_t depth_first_traverse(
 
 	if (graph && graph->vertices)
 	{
-		table = calloc((graph->nb_vertices - 1) / 8 + 1, 1);
+		table = calloc((graph->nb_vertices - 1) / sizeof(*table) + 1,
+			sizeof(*table));
 		if (table)
 		{
 			depth = dft(graph->vertices, depth, action, table);
