@@ -1,5 +1,6 @@
 #include "graphs.h"
 
+#define N_BITS(x) (sizeof(x) * 8)
 
 /**
  * dft - perform depth-first traversal over a graph
@@ -19,11 +20,11 @@ static size_t dft(
 	size_t max_depth = 0;
 	size_t new_depth = 0;
 
-	if (vertex && !(table[vertex->index / sizeof(*table)] &
-			(1 << vertex->index % sizeof(*table))))
+	if (vertex && !(table[vertex->index / N_BITS(*table)] &
+			(1 << vertex->index % N_BITS(*table))))
 	{
-		table[vertex->index / sizeof(*table)] |=
-			(1 << vertex->index % sizeof(*table));
+		table[vertex->index / N_BITS(*table)] |=
+			(1 << vertex->index % N_BITS(*table));
 		action(vertex, depth);
 		max_depth = depth;
 		for (edge = vertex->edges; edge; edge = edge->next)
@@ -53,8 +54,8 @@ size_t depth_first_traverse(
 
 	if (graph && graph->vertices)
 	{
-		table = calloc((graph->nb_vertices - 1) / sizeof(*table) + 1,
-			sizeof(*table));
+		table = calloc((graph->nb_vertices - 1) / N_BITS(*table) + 1,
+			N_BITS(*table));
 		if (table)
 		{
 			depth = dft(graph->vertices, depth, action, table);
