@@ -2,7 +2,12 @@
 
 
 /**
- * dft -
+ * dft - perform depth-first traversal over a graph
+ *
+ * @vertex: pointer to the starting vertex
+ * @depth: depth of the starting vertex
+ * @action: pointer to a function to apply to each vertex
+ * @table: pointer to a table of visited vertices
  *
  * Return: Upon failure, return 0. Otherwise, return the greatest vertex depth.
  */
@@ -14,9 +19,9 @@ static size_t dft(
 	size_t max_depth = 0;
 	size_t new_depth = 0;
 
-	if (vertex && !table[vertex->index])
+	if (vertex && !(table[vertex->index / 8] & (1 << (vertex->index % 8))))
 	{
-		table[vertex->index] = 1;
+		table[vertex->index / 8] |= (1U << (vertex->index % 8));
 		action(vertex, depth);
 		max_depth = depth;
 		for (edge = vertex->edges; edge; edge = edge->next)
@@ -31,7 +36,10 @@ static size_t dft(
 
 
 /**
- * depth_first_traverse -
+ * depth_first_traverse - perform depth-first traversal over a graph
+ *
+ * @graph: pointer to the graph to traverse
+ * @action: pointer to a function to apply to each vertex
  *
  * Return: Upon failure, return 0. Otherwise, return the greatest vertex depth.
  */
@@ -43,7 +51,7 @@ size_t depth_first_traverse(
 
 	if (graph && graph->vertices)
 	{
-		table = calloc(graph->nb_vertices, sizeof(*table));
+		table = calloc((graph->nb_vertices - 1) / 8 + 1, 1);
 		if (table)
 		{
 			depth = dft(graph->vertices, depth, action, table);
