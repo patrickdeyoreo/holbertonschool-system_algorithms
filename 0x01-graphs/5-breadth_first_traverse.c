@@ -33,6 +33,10 @@ static size_t bft(
 	while (queue != queue_rear)
 	{
 		vertex = *queue++;
+		if (!vertex)
+		{
+			continue;
+		}
 		depth = depths[vertex->index];
 		action(vertex, depth);
 		for (edge = vertex->edges; edge; edge = edge->next)
@@ -67,7 +71,7 @@ size_t breadth_first_traverse(
 	size_t *depths = NULL;
 	size_t depth = 0;
 
-	if (!graph)
+	if (!graph || !graph->vertices)
 	{
 		return (0);
 	}
