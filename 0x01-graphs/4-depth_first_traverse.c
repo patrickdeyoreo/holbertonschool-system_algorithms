@@ -22,7 +22,7 @@ static size_t dft(
 	size_t max_depth = depth;
 	size_t new_depth = 0;
 
-	if (visited[vertex->index])
+	if (!vertex || visited[vertex->index])
 	{
 		return (0);
 	}
@@ -55,7 +55,7 @@ size_t depth_first_traverse(
 	bool *visited = NULL;
 	size_t depth = 0;
 
-	if (!graph)
+	if (!graph || !graph->vertices)
 	{
 		return (0);
 	}
