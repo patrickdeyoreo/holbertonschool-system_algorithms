@@ -30,10 +30,6 @@ static size_t dft(
 	action(vertex, depth);
 	for (edge = vertex->edges; edge; edge = edge->next)
 	{
-		if (visited[edge->dest->index])
-		{
-			continue;
-		}
 		new_depth = dft(edge->dest, action, visited, depth + 1);
 		if (max_depth < new_depth)
 		{
