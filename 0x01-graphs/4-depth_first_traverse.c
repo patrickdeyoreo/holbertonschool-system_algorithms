@@ -1,37 +1,38 @@
+#include <stdbool.h>
+
 #include "graphs.h"
 
-#define N_BITS(x) (sizeof(x) * 8)
 
 /**
  * dft - perform depth-first traversal over a graph
  *
  * @vertex: pointer to the starting vertex
- * @depth: depth of the starting vertex
  * @action: pointer to a function to apply to each vertex
- * @table: pointer to a table of visited vertices
+ * @visited: pointer to a table of visited vertex indices
+ * @depth: depth of the starting vertex
  *
  * Return: Upon failure, return 0. Otherwise, return the greatest vertex depth.
  */
 static size_t dft(
-	const vertex_t *vertex, size_t depth,
-	void (*action)(const vertex_t *, size_t), unsigned char *table)
+	const vertex_t *vertex, void (*action)(const vertex_t *, size_t),
+	bool *visited, size_t depth)
 {
-	edge_t *edge = NULL;
-	size_t max_depth = 0;
+	const edge_t *edge = NULL;
+	size_t max_depth = depth;
 	size_t new_depth = 0;
 
-	if (vertex && !(table[vertex->index / N_BITS(*table)] &
-			(1 << vertex->index % N_BITS(*table))))
+	if (visited[vertex->index])
 	{
-		table[vertex->index / N_BITS(*table)] |=
-			(1 << vertex->index % N_BITS(*table));
-		action(vertex, depth);
-		max_depth = depth;
-		for (edge = vertex->edges; edge; edge = edge->next)
+		return (0);
+	}
+	visited[vertex->index] = true;
+	action(vertex, depth);
+	for (edge = vertex->edges; edge; edge = edge->next)
+	{
+		new_depth = dft(edge->dest, action, visited, depth + 1);
+		if (max_depth < new_depth)
 		{
-			new_depth = dft(edge->dest, depth + 1, action, table);
-			if (max_depth < new_depth)
-				max_depth = new_depth;
+			max_depth = new_depth;
 		}
 	}
 	return (max_depth);
@@ -49,18 +50,19 @@ static size_t dft(
 size_t depth_first_traverse(
 	const graph_t *graph, void (*action)(const vertex_t *, size_t))
 {
-	unsigned char *table = NULL;
+	bool *visited = NULL;
 	size_t depth = 0;
 
-	if (graph && graph->vertices)
+	if (!graph)
 	{
-		table = calloc((graph->nb_vertices - 1) / N_BITS(*table) + 1,
-			N_BITS(*table));
-		if (table)
-		{
-			depth = dft(graph->vertices, depth, action, table);
-			free(table);
-		}
+		return (0);
 	}
+	visited = calloc(graph->nb_vertices, sizeof(*visited));
+	if (!visited)
+	{
+		return (0);
+	}
+	depth = dft(graph->vertices, action, visited, 0);
+	free(visited);
 	return (depth);
 }

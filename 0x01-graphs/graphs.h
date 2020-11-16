@@ -58,7 +58,7 @@ typedef struct vertex_s
 typedef struct graph_s
 {
 	size_t		nb_vertices;
-	vertex_t	*vertices;
+	struct vertex_s	*vertices;
 } graph_t;
 
 
