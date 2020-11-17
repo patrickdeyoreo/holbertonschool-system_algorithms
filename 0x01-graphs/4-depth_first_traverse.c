@@ -22,7 +22,7 @@ static size_t dft(
 	size_t max_depth = depth;
 	size_t new_depth = 0;
 
-	if (!vertex || visited[vertex->index])
+	if (visited[vertex->index])
 	{
 		return (0);
 	}

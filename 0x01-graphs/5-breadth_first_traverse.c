@@ -33,10 +33,6 @@ static size_t bft(
 	while (queue != queue_rear)
 	{
 		vertex = *queue++;
-		if (!vertex)
-		{
-			continue;
-		}
 		depth = depths[vertex->index];
 		action(vertex, depth);
 		for (edge = vertex->edges; edge; edge = edge->next)
