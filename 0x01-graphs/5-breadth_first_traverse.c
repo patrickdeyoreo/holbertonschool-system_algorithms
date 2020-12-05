@@ -23,10 +23,6 @@ static size_t bft(
 	const edge_t *edge = NULL;
 	size_t depth = 0;
 
-	if (queued[vertex->index])
-	{
-		return (0);
-	}
 	*queue_rear++ = vertex;
 	queued[vertex->index] = true;
 	depths[vertex->index] = 0;
@@ -37,13 +33,12 @@ static size_t bft(
 		action(vertex, depth);
 		for (edge = vertex->edges; edge; edge = edge->next)
 		{
-			if (queued[edge->dest->index])
+			if (!queued[edge->dest->index])
 			{
-				continue;
+				*queue_rear++ = edge->dest;
+				queued[edge->dest->index] = true;
+				depths[edge->dest->index] = depth + 1;
 			}
-			*queue_rear++ = edge->dest;
-			queued[edge->dest->index] = true;
-			depths[edge->dest->index] = depth + 1;
 		}
 	}
 	return (depth);
