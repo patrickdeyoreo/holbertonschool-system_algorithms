@@ -3,35 +3,37 @@
 #include "heap.h"
 
 /**
- * _heap_extract_sift_down - sift data downward
- *
- * @heap: pointer to the heap from which data was extracted
+ * sift_down - heapifies node
+ * @heap: heap
  */
 static void _heap_extract_sift_down(heap_t *heap)
 {
-	binary_tree_node_t *root = heap->root;
-	binary_tree_node_t *swap = root;
-	binary_tree_node_t *lchild = NULL;
-	binary_tree_node_t *rchild = NULL;
-	void *data = root->data;
+	binary_tree_node_t *largest, *node;
+	void *data;
 
 	if (!heap || !heap->root || heap->size < 2)
 		return;
-	while (root)
+	node = heap->root;
+	data = node->data;
+	while (node->left)
 	{
-		lchild = root->left;
-		rchild = root->right;
-		if (lchild && heap->data_cmp(swap->data, lchild->data) > 0)
-			swap = lchild;
-		if (rchild && heap->data_cmp(swap->data, rchild->data) > 0)
-			swap = rchild;
-		if (swap == root)
-			return;
-		root->data = swap->data;
-		swap->data = data;
-		root = swap;
+		largest = node->left;
+		if (node->right && heap->data_cmp(node->data, node->right->data) >= 0
+		    && heap->data_cmp(node->right->data, node->left->data) < 0)
+		{
+			node->data = node->right->data;
+			node->right->data = data;
+			largest = node->right;
+		}
+		else if (heap->data_cmp(node->left->data, node->data) <= 0)
+		{
+			node->data = node->left->data;
+			node->left->data = data;
+		}
+		node = largest;
 	}
 }
+
 
 /**
  * _heap_extract - extract the value at the root of a binary heap
@@ -62,6 +64,7 @@ static void _heap_extract(heap_t *heap)
 	}
 	_heap_extract_sift_down(heap);
 }
+
 
 /**
  * heap_extract - extract the value at the root of a binary heap
