@@ -21,15 +21,15 @@ static void _heap_extract_sift_down(heap_t *heap)
 		if (rchild && heap->data_cmp(node->data, rchild->data) >= 0 &&
 			heap->data_cmp(rchild->data, lchild->data) < 0)
 		{
-			node->data = node->right->data;
-			node->right->data = data;
-			swap = node->right;
+			node->data = rchild->data;
+			rchild->data = data;
+			swap = rchild;
 		}
-		else if (lchild && heap->data_cmp(lchild->data, node->data) <= 0)
+		else if (lchild && heap->data_cmp(node->data, lchild->data) >= 0)
 		{
-			node->data = node->left->data;
-			node->left->data = data;
-			swap = node->left;
+			node->data = lchild->data;
+			lchild->data = data;
+			swap = lchild;
 		}
 		if (swap == node)
 			return;
