@@ -14,7 +14,6 @@ static void _heap_extract_sift_down(heap_t *heap)
 
 	while (node)
 	{
-		largest = node->left;
 		if (node->right && heap->data_cmp(node->data, node->right->data) >= 0
 		    && heap->data_cmp(node->right->data, node->left->data) < 0)
 		{
@@ -26,7 +25,10 @@ static void _heap_extract_sift_down(heap_t *heap)
 		{
 			node->data = node->left->data;
 			node->left->data = data;
+			largest = node->left;
 		}
+		if (largest == node)
+			return;
 		node = largest;
 	}
 }
