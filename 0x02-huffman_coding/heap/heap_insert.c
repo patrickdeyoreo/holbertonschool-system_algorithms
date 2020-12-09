@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "heap.h"
 
 /**
@@ -7,7 +9,7 @@
  * Return: parent if n is +1 than size or nth
  * node which will store the next inserted node
  */
-binary_tree_node_t *get_nth_node(binary_tree_node_t *node, size_t n)
+static binary_tree_node_t *get_nth_node(binary_tree_node_t *node, size_t n)
 {
 	int index = 0, mask;
 
@@ -40,7 +42,7 @@ binary_tree_node_t *get_nth_node(binary_tree_node_t *node, size_t n)
  * @node: inserted node
  * Return: returns the current node
  */
-binary_tree_node_t *heapify(heap_t *heap, binary_tree_node_t *node)
+static binary_tree_node_t *heapify(heap_t *heap, binary_tree_node_t *node)
 {
 	void *temp;
 
