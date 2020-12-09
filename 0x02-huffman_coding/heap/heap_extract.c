@@ -8,25 +8,26 @@
  */
 static void _heap_extract_sift_down(heap_t *heap)
 {
-	binary_tree_node_t *node = heap->root;
-	binary_tree_node_t *swap = node;
-	binary_tree_node_t *lchild = NULL;
-	binary_tree_node_t *rchild = NULL;
-	void *data = node->data;
+	binary_tree_root_t *root = heap->root;
+	binary_tree_root_t *swap = root;
+	binary_tree_root_t *lchild = NULL;
+	binary_tree_root_t *rchild = NULL;
+	void *data = root->data;
 
-	while (node)
+	while (root)
 	{
-		lchild = node->left;
-		rchild = node->right;
-		if (lchild && heap->data_cmp(swap->data, lchild->data) >= 0)
-			swap = lchild;
-		if (rchild && heap->data_cmp(swap->data, rchild->data) >= 0)
+		lchild = root->left;
+		rchild = root->right;
+		if (rchild && heap->data_cmp(root->data, rchild->data) >= 0 &&
+			heap->data_cmp(lchild->data, rchild->data) > 0)
 			swap = rchild;
-		if (swap == node)
+		else if (lchild && heap->data_cmp(root->data, lchild->data) >= 0)
+			swap = lchild;
+		if (swap == root)
 			return;
-		node->data = swap->data;
+		root->data = swap->data;
 		swap->data = data;
-		node = swap;
+		root = swap;
 	}
 }
 
