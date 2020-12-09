@@ -19,9 +19,9 @@ static void _heap_extract_sift_down(heap_t *heap)
 	{
 		lchild = root->left;
 		rchild = root->right;
-		if (rchild && heap->data_cmp(swap->data, rchild->data) > 0)
+		if (rchild && heap->data_cmp(swap->data, rchild->data) >= 0)
 			swap = rchild;
-		if (lchild && heap->data_cmp(swap->data, lchild->data) > 0)
+		if (lchild && heap->data_cmp(swap->data, lchild->data) >= 0)
 			swap = lchild;
 		if (swap == root)
 			return;
