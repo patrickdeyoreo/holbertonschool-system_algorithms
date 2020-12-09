@@ -9,27 +9,31 @@
 static void _heap_extract_sift_down(heap_t *heap)
 {
 	binary_tree_node_t *node = heap->root;
-	binary_tree_node_t *largest = node;
+	binary_tree_node_t *swap = node;
+	binary_tree_node_t *lchild = NULL;
+	binary_tree_node_t *rchild = NULL;
 	void *data = node->data;
 
 	while (node)
 	{
-		if (node->right && heap->data_cmp(node->data, node->right->data) >= 0
-		    && heap->data_cmp(node->right->data, node->left->data) < 0)
+		lchild = node->left;
+		rchild = node->right;
+		if (rchild && heap->data_cmp(node->data, rchild->data) > 0 &&
+			heap->data_cmp(lchild->data, rchild->data) > 0)
 		{
-			node->data = node->right->data;
-			node->right->data = data;
-			largest = node->right;
+			node->data = rchild->data;
+			rchild->data = data;
+			swap = rchild;
 		}
-		else if (node->left && heap->data_cmp(node->left->data, node->data) <= 0)
+		else if (lchild && heap->data_cmp(node->data, lchild->data) > 0)
 		{
-			node->data = node->left->data;
-			node->left->data = data;
-			largest = node->left;
+			node->data = lchild->data;
+			lchild->data = data;
+			swap = lchild;
 		}
-		if (largest == node)
+		if (swap == node)
 			return;
-		node = largest;
+		node = swap;
 	}
 }
 
