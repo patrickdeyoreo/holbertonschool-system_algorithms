@@ -8,13 +8,10 @@
  */
 static void _heap_extract_sift_down(heap_t *heap)
 {
-	binary_tree_node_t *largest, *node;
-	void *data;
+	binary_tree_node_t *node = heap->root;
+	binary_tree_node_t *largest = node;
+	void *data = node->data;
 
-	if (!heap || !heap->root || heap->size < 2)
-		return;
-	node = heap->root;
-	data = node->data;
 	while (node->left)
 	{
 		largest = node->left;
