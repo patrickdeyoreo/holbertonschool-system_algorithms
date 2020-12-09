@@ -4,11 +4,30 @@
 #include "huffman.h"
 
 /**
+ * _node_free - free priority queue data
+ *
+ * @data: pointer to priority queue data
+ */
+static void _node_free(void *data)
+{
+	binary_tree_node_t *node = data;
+
+	if (node)
+	{
+		_node_free(node->left);
+		_node_free(node->right);
+		free(node->data);
+		free(node);
+	}
+}
+
+
+/**
  * get_msb - get set MSB bit of @n
  * @n: number
  * Return: number with only MSB set
 */
-ulong get_msb(ulong n)
+static unsigned long int get_msb(ulong n)
 {
 	/* while ((n & mask) == 0) */
 	/*	mask >>= 1; */
@@ -27,7 +46,7 @@ ulong get_msb(ulong n)
  * @data: symbol struct
  * @n: path from root node to leaf node represented in binary number
  */
-void sym_p(void *data, ulong n)
+static void sym_p(void *data, ulong n)
 {
 	symbol_t *symbol;
 	char c;
@@ -107,6 +126,6 @@ int huffman_codes(char *data, size_t *freq, size_t size)
 	if (!tree)
 		return (0);
 	traverse(tree);
-	free_tree(tree, free_node);
+	free_tree(tree, _node_free);
 	return (1);
 }
