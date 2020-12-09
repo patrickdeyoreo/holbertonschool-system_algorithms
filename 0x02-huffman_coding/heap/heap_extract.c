@@ -1,84 +1,75 @@
-#include <stdlib.h>
-
 #include "heap.h"
 
 /**
- * _heap_extract_sift_down - sift data downward
- *
- * @heap: pointer to the heap from which data was extracted
+ * swap - swap data of two nodes
+ * @n1: node1
+ * @n2: node2
  */
-static void _heap_extract_sift_down(heap_t *heap)
+void swap(binary_tree_node_t *n1, binary_tree_node_t *n2)
 {
-	binary_tree_node_t *root = heap->root;
-	binary_tree_node_t *swap = root;
-	binary_tree_node_t *lchild = NULL;
-	binary_tree_node_t *rchild = NULL;
-	void *data = root->data;
+	void *temp;
 
-	while (root)
+	temp = n1->data;
+	n1->data = n2->data;
+	n2->data = temp;
+}
+
+/**
+ * sift_down - heapifies node
+ * @heap: heap
+ */
+void sift_down(heap_t *heap)
+{
+	binary_tree_node_t *largest, *node;
+
+	if (!heap || !heap->root || heap->size < 2)
+		return;
+	node = heap->root;
+	while (node->left)
 	{
-		lchild = root->left;
-		rchild = root->right;
-		if (lchild && heap->data_cmp(swap->data, lchild->data) > 0)
-			swap = lchild;
-		if (rchild && heap->data_cmp(swap->data, rchild->data) > 0)
-			swap = rchild;
-		if (swap == root)
-			return;
-		root->data = swap->data;
-		swap->data = data;
-		root = swap;
+		largest = node->left;
+		if (node->right && heap->data_cmp(node->data, node->right->data) >= 0
+		    && heap->data_cmp(node->right->data, node->left->data) < 0)
+		{
+			swap(node->right, node);
+			largest = node->right;
+		}
+		else if (heap->data_cmp(node->left->data, node->data) <= 0)
+		{
+			swap(node->left, node);
+		}
+		node = largest;
 	}
 }
 
 /**
- * _heap_extract - extract the value at the root of a binary heap
- *
- * @heap: pointer to the heap from which to extract data
- */
-static void _heap_extract(heap_t *heap)
-{
-	binary_tree_node_t **child = NULL;
-	binary_tree_node_t *parent = heap->root;
-	size_t path = heap->size >> 1;
-	size_t msb = 0;
-
-	while ((path >> msb) > 1)
-		msb += 1;
-	while (msb--)
-		parent = (path >> msb) % 2 ? parent->right : parent->left;
-	child = heap->size-- % 2 ? &parent->right : &parent->left;
-	heap->root->data = (*child)->data;
-	free(*child);
-	*child = NULL;
-	_heap_extract_sift_down(heap);
-}
-
-
-/**
- * heap_extract - extract the value at the root of a binary heap
- *
- * @heap: pointer to the heap from which to extract data
- *
- * Return: If heap is NULL or empty, return NULL.
- * Otherwise, returh a pointer the extracted data.
+ * heap_extract - extracts root node from heap (min value)
+ * @heap: heap
+ * Return: data of root node
  */
 void *heap_extract(heap_t *heap)
 {
-	void *data = NULL;
+	binary_tree_node_t *last_node;
+	void *data;
 
-	if (!heap || !heap->size)
+	if (!heap || !heap->root || heap->size <= 0)
 		return (NULL);
 	data = heap->root->data;
-	if (heap->size == 1)
+	last_node = get_nth_node(heap->root, heap->size);
+	heap->root->data = last_node->data;
+	if (last_node->parent)
 	{
-		free(heap->root);
-		heap->root = NULL;
-		heap->size = 0;
+		if (last_node->parent->left == last_node)
+			last_node->parent->left = NULL;
+		else
+			last_node->parent->right = NULL;
 	}
 	else
 	{
-		_heap_extract(heap);
+		heap->root = NULL;
 	}
+	free(last_node);
+	heap->size -= 1;
+	sift_down(heap);
 	return (data);
 }
