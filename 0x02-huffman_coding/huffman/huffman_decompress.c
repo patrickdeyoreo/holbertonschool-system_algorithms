@@ -5,8 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../heap/heap.h"
-#include "../huffman.h"
+#include "huffman.h"
 
 /**
  * huffman_decompress - decompress a file

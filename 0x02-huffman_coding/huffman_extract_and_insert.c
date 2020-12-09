@@ -4,18 +4,18 @@
 #include "huffman.h"
 
 /**
- * _data_free - free priority queue data
+ * _node_free - free priority queue data
  *
  * @data: pointer to priority queue data
  */
-static void _data_free(void *data)
+static void _node_free(void *data)
 {
 	binary_tree_node_t *node = data;
 
 	if (node)
 	{
-		_data_free(node->left);
-		_data_free(node->right);
+		_node_free(node->left);
+		_node_free(node->right);
 		free(node->data);
 		free(node);
 	}
@@ -46,23 +46,23 @@ int huffman_extract_and_insert(heap_t *priority_queue)
 	symbol_c = symbol_create(-1, symbol_a->freq + symbol_b->freq);
 	if (!symbol_c)
 	{
-		_data_free(node_a);
-		_data_free(node_b);
+		_node_free(node_a);
+		_node_free(node_b);
 		return (0);
 	}
 	node_c = binary_tree_node(NULL, symbol_c);
 	if (!node_c)
 	{
-		_data_free(node_a);
-		_data_free(node_b);
+		_node_free(node_a);
+		_node_free(node_b);
 		free(symbol_c);
 		return (0);
 	}
 	if (!heap_insert(priority_queue, node_c))
 	{
-		_data_free(node_a);
-		_data_free(node_b);
-		_data_free(node_c);
+		_node_free(node_a);
+		_node_free(node_b);
+		_node_free(node_c);
 		return (0);
 	}
 	node_c->left = node_a;

@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../huffman.h"
+#include "huffman.h"
 
 /**
  * huffman_compress - compress a file

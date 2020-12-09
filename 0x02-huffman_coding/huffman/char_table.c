@@ -1,4 +1,4 @@
-#include "../huffman.h"
+#include "huffman.h"
 
 /**
  * char_table - get the global character table

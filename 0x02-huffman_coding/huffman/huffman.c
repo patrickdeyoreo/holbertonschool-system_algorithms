@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../huffman.h"
+#include "huffman.h"
 
 #define USAGE_FORMAT "%s <mode> <in_filename> <out_filename>"
 

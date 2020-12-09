@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "../huffman.h"
+#include "huffman.h"
 
 /**
  * freq_table - get the global character frequency table
