@@ -1,11 +1,45 @@
 #include "heap.h"
 
 /**
+ * get_nth_node - get the nth node where next node should be inserted
+ * @node: heap
+ * @n: index of node to be inserted
+ * Return: parent if n is +1 than size or nth
+ * node which will store the next inserted node
+ */
+static binary_tree_node_t *get_nth_node(binary_tree_node_t *node, size_t n)
+{
+	int index = 0, mask;
+
+	for (index = 0; 1 << (index + 1) <= (int)n; ++index)
+		;
+	for (--index; index >= 0; --index)
+	{
+		mask = 1 << index;
+		if (n & mask)
+		{
+			if (node->right)
+				node = node->right;
+			else
+				break;
+		}
+		else
+		{
+			if (node->left)
+				node = node->left;
+			else
+				break;
+		}
+	}
+	return (node);
+}
+
+/**
  * swap - swap data of two nodes
  * @n1: node1
  * @n2: node2
  */
-void swap(binary_tree_node_t *n1, binary_tree_node_t *n2)
+static void swap(binary_tree_node_t *n1, binary_tree_node_t *n2)
 {
 	void *temp;
 
@@ -18,7 +52,7 @@ void swap(binary_tree_node_t *n1, binary_tree_node_t *n2)
  * sift_down - heapifies node
  * @heap: heap
  */
-void sift_down(heap_t *heap)
+static void sift_down(heap_t *heap)
 {
 	binary_tree_node_t *largest, *node;
 
