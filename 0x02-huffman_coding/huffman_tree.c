@@ -1,34 +1,52 @@
+#include <stdlib.h>
+
 #include "heap/heap.h"
 #include "huffman.h"
 
 /**
- * huffman_tree - builds a Huffman tree
- * @data: array of character
- * @freq: frequencies of each character of @data
- * @size: size of @freq and @data
- * Return: Huffman tree if success, NULL on failure
-*/
+ * _data_free - free priority queue data
+ *
+ * @data: pointer to priority queue data
+ */
+static void _data_free(void *data)
+{
+	binary_tree_node_t *node = data;
+
+	if (node)
+	{
+		_data_free(node->left);
+		_data_free(node->right);
+		free(node->data);
+		free(node);
+	}
+}
+
+/**
+ * huffman_tree - build a huffman tree
+ *
+ * @data: array of characters
+ * @freq: array of corresponding frequencies
+ * @size: size of the arrays
+ *
+ * Return: If memory allocation fails, or if data or freq is NULL, return NULL.
+ * Otherwise, return a pointer to the root of the resulting huffman tree.
+ */
 binary_tree_node_t *huffman_tree(char *data, size_t *freq, size_t size)
 {
-	heap_t *heap;
-	binary_tree_node_t *tree;
+	heap_t *priority_queue = huffman_priority_queue(data, freq, size);
+	binary_tree_node_t *tree = NULL;
 
-	if (!data || !freq || size == 0)
+	if (!priority_queue)
 		return (NULL);
-	heap = huffman_priority_queue(data, freq, size);
-	if (!heap)
-		return (NULL);
-	while (heap->size > 1)
+	while (priority_queue->size > 1)
 	{
-		if (!huffman_extract_and_insert(heap))
+		if (!huffman_extract_and_insert(priority_queue))
 		{
-			/* heap_delete(heap, free_node); */
-			/* return (NULL); */
-			break;
+			heap_delete(priority_queue, _data_free);
+			return (NULL);
 		}
 	}
-	tree = heap->root->data;
-	free(heap->root);
-	free(heap);
+	tree = priority_queue->root->data;
+	heap_delete(priority_queue, NULL);
 	return (tree);
 }
