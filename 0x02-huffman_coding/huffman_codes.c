@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "heap/heap.h"
 #include "huffman.h"
 
