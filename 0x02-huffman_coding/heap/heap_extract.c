@@ -8,10 +8,10 @@
  */
 static void _heap_extract_sift_down(heap_t *heap)
 {
-	binary_tree_root_t *root = heap->root;
-	binary_tree_root_t *swap = root;
-	binary_tree_root_t *lchild = NULL;
-	binary_tree_root_t *rchild = NULL;
+	binary_tree_node_t *root = heap->root;
+	binary_tree_node_t *swap = root;
+	binary_tree_node_t *lchild = NULL;
+	binary_tree_node_t *rchild = NULL;
 	void *data = root->data;
 
 	while (root)
