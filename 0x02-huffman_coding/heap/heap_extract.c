@@ -12,7 +12,7 @@ static void _heap_extract_sift_down(heap_t *heap)
 	binary_tree_node_t *largest = node;
 	void *data = node->data;
 
-	while (node->left)
+	while (node)
 	{
 		largest = node->left;
 		if (node->right && heap->data_cmp(node->data, node->right->data) >= 0
@@ -22,7 +22,7 @@ static void _heap_extract_sift_down(heap_t *heap)
 			node->right->data = data;
 			largest = node->right;
 		}
-		else if (heap->data_cmp(node->left->data, node->data) <= 0)
+		else if (node->left && heap->data_cmp(node->left->data, node->data) <= 0)
 		{
 			node->data = node->left->data;
 			node->left->data = data;
