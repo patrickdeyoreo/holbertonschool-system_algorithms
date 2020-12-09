@@ -71,9 +71,15 @@ binary_tree_node_t *heap_insert(heap_t *heap, void *data)
 	node = binary_tree_node(NULL, data);
 	if (!node)
 		return (NULL);
-	if (!heap->size++)
+	if (!heap->size)
+	{
+		heap->size = 1;
 		heap->root = node;
+	}
 	else
+	{
+		heap->size += 1;
 		node = _heap_insert(heap, node);
+	}
 	return (node);
 }
