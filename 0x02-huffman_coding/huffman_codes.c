@@ -4,23 +4,20 @@
 #include "huffman.h"
 
 /**
- * _node_free - free priority queue data
+ * _huffman_tree_delete - delete a huffman tree
  *
- * @data: pointer to priority queue data
+ * @tree: pointer to the root of a huffman tree
  */
-static void _node_free(void *data)
+static void _huffman_tree_delete(binary_tree_node_t *tree)
 {
-	binary_tree_node_t *node = data;
-
-	if (node)
+	if (tree)
 	{
-		_node_free(node->left);
-		_node_free(node->right);
-		free(node->data);
-		free(node);
+		_huffman_tree_delete(tree->left);
+		_huffman_tree_delete(tree->right);
+		free(tree->data);
+		free(tree);
 	}
 }
-
 
 /**
  * get_msb - get set MSB bit of @n
@@ -126,6 +123,6 @@ int huffman_codes(char *data, size_t *freq, size_t size)
 	if (!tree)
 		return (0);
 	traverse(tree);
-	free_tree(tree, _node_free);
+	_huffman_tree_delete(tree);
 	return (1);
 }
