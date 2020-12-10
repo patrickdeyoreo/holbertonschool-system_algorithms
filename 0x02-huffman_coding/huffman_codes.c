@@ -20,66 +20,48 @@ static void _huffman_tree_delete(binary_tree_node_t *tree)
 }
 
 /**
- * get_msb - get set MSB bit of @n
- * @n: number
- * Return: number with only MSB set
-*/
-static unsigned long int get_msb(ulong n)
-{
-	/* while ((n & mask) == 0) */
-	/*	mask >>= 1; */
-	n |= n >> 1;
-	n |= n >> 2;
-	n |= n >> 4;
-	n |= n >> 8;
-	n |= n >> 16;
-	n |= n >> 32;
-	++n;
-	return (n >> 1);
-}
-
-/**
- * sym_p - print symbol along with it's Huffman code
- * @data: symbol struct
- * @n: path from root node to leaf node represented in binary number
+ * _print_symbol - print a symbol and its huffman code to standard output
+ *
+ * @data: symbol to print
+ * @path: path from root node to leaf node represented in binary number
  */
-static void sym_p(void *data, ulong n)
+static void _print_symbol(void *data, unsigned long int path)
 {
-	symbol_t *symbol;
-	char c;
-	ulong mask;
+	symbol_t *symbol = data;
+	char c = symbol ? symbol->data : -1;
+	unsigned long int msb = 0;
 
-	symbol = (symbol_t *)data;
-	c = symbol->data;
 	if (c == -1)
 		return;
 	printf("%c: ", c);
-	mask = get_msb(n);
-	for (mask >>= 1; mask; mask >>= 1)
-		putchar((n & mask) ? '1' : '0');
+	while ((path >> msb) > 1)
+		msb += 1;
+	while (msb--)
+		putchar(((path >> msb) & 1) + '0');
 	putchar('\n');
 }
 
 /**
- * traverse - traverses binary tree, iterative way, no stack used
- * @tree: binary tree
-*/
-void traverse(binary_tree_node_t *tree)
+ * _huffman_codes_print - traverse huffman tree and print huffman codes
+ *
+ * @tree: pointer to the root of a huffman tree
+ */
+static void _huffman_codes_print(binary_tree_node_t *tree)
 {
 	int left_done = 0;
-	ulong path = 1UL;
+	unsigned long int path = 1;
 
-	if (!tree)
-		return;
 	while (tree)
 	{
 		if (!left_done)
+		{
 			while (tree->left)
 			{
 				tree = tree->left;
-				path = path << 1;
+				path <<= 1;
 			}
-		sym_p(tree->data, path);
+		}
+		_print_symbol(tree->data, path);
 		left_done = 1;
 		if (tree->right)
 		{
@@ -107,22 +89,24 @@ void traverse(binary_tree_node_t *tree)
 }
 
 /**
- * huffman_codes - prints huffman codes for every character
+ * huffman_codes - build a huffman tree and print resulting huffman codes
+ *
  * @data: array of characters
- * @freq: frequencies of every character
- * @size: size of @data and @freq
- * Return: 1 if it succeed, 0 if it fails
-*/
+ * @freq: array of corresponding frequencies
+ * @size: size of the arrays
+ *
+ * Return: Upon success, return 1. Otherwise, return 0.
+ */
 int huffman_codes(char *data, size_t *freq, size_t size)
 {
-	binary_tree_node_t *tree;
+	binary_tree_node_t *tree = NULL;
 
 	if (!data || !freq || !size)
 		return (0);
 	tree = huffman_tree(data, freq, size);
 	if (!tree)
 		return (0);
-	traverse(tree);
+	_huffman_codes_print(tree);
 	_huffman_tree_delete(tree);
 	return (1);
 }
