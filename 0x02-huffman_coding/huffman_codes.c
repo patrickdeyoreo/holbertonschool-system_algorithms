@@ -23,7 +23,7 @@ static void _huffman_tree_delete(binary_tree_node_t *tree)
  * _print_symbol - print a symbol and its huffman code to standard output
  *
  * @data: symbol to print
- * @path: path from root node to leaf node represented in binary number
+ * @path: path from root node to leaf node as a binary number
  */
 static void _print_symbol(void *data, unsigned long int path)
 {
@@ -45,45 +45,23 @@ static void _print_symbol(void *data, unsigned long int path)
  * _huffman_codes_print - traverse huffman tree and print huffman codes
  *
  * @tree: pointer to the root of a huffman tree
+ * @path: path from root node to leaf node as a binary number
  */
-static void _huffman_codes_print(binary_tree_node_t *tree)
+static void _huffman_codes_print(binary_tree_node_t *tree, unsigned int path)
 {
-	int left_done = 0;
-	unsigned long int path = 1;
+	symbol_t *symbol = NULL;
 
-	while (tree)
+	if (tree)
 	{
-		if (!left_done)
+		symbol = tree->data;
+		if (symbol && symbol->data == -1)
 		{
-			while (tree->left)
-			{
-				tree = tree->left;
-				path <<= 1;
-			}
+			_huffman_codes_print(tree->left, path << 1);
+			_huffman_codes_print(tree->right, path << 1 | 1);
 		}
-		_print_symbol(tree->data, path);
-		left_done = 1;
-		if (tree->right)
+		else if (symbol)
 		{
-			left_done = 0;
-			tree = tree->right;
-			path = (path << 1) | 1;
-		}
-		else if (tree->parent)
-		{
-			while (tree->parent && tree == tree->parent->right)
-			{
-				tree = tree->parent;
-				path = path >> 1;
-			}
-			if (!tree->parent)
-				break;
-			tree = tree->parent;
-			path = path >> 1;
-		}
-		else
-		{
-			break;
+			_print_symbol(symbol, path);
 		}
 	}
 }
@@ -99,14 +77,11 @@ static void _huffman_codes_print(binary_tree_node_t *tree)
  */
 int huffman_codes(char *data, size_t *freq, size_t size)
 {
-	binary_tree_node_t *tree = NULL;
+	binary_tree_node_t *tree = huffman_tree(data, freq, size);
 
-	if (!data || !freq || !size)
-		return (0);
-	tree = huffman_tree(data, freq, size);
 	if (!tree)
 		return (0);
-	_huffman_codes_print(tree);
+	_huffman_codes_print(tree, 1);
 	_huffman_tree_delete(tree);
 	return (1);
 }
