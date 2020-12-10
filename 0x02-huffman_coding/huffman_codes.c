@@ -28,17 +28,15 @@ static void _huffman_tree_delete(binary_tree_node_t *tree)
 static void _print_symbol(void *data, unsigned long int path)
 {
 	symbol_t *symbol = data;
-	char c = symbol ? symbol->data : -1;
+	char c = symbol->data;
 	unsigned long int msb = 0;
 
-	if (c == -1)
-		return;
 	printf("%c: ", c);
 	while ((path >> msb) > 1)
 		msb += 1;
 	while (msb--)
-		putchar(((path >> msb) & 1) + '0');
-	putchar('\n');
+		putchar((path >> msb) & 1 ? '1' : '0');
+	printf("\n");
 }
 
 /**
