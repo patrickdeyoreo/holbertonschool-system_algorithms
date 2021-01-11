@@ -19,8 +19,8 @@ typedef struct symbol_s
 	size_t freq;
 } symbol_t;
 
-#define CHAR_TABLE_SIZE (1 << (sizeof(char) * 8))
-#define FREQ_TABLE_SIZE CHAR_TABLE_SIZE
+#define CHAR_TABLE_SIZE 256
+#define FREQ_TABLE_SIZE 256
 
 typedef char char_table_t[CHAR_TABLE_SIZE];
 typedef size_t freq_table_t[FREQ_TABLE_SIZE];
