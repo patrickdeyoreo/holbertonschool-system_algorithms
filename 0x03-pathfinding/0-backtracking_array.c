@@ -75,12 +75,14 @@ static char **map_create(unsigned int rows, unsigned int cols)
 /**
  * _backtracking_array - search for a path between two points in a 2D array
  *
- * @map: 2D array of walkable and unwalkable cells (0s and 1s, respectively)
+ * @map: 2D map of walkable and unwalkable cells (0s and 1s, respectively)
  * @rows: number of rows of map
  * @cols: number of columns of map
- * @start: coordinates of the starting point
+ * @x: x-coordinate of the starting point
+ * @y: y-coordinate of the starting point
  * @target: coordinates of the target point
  * @queue: pointer to a queue of points in a path
+ * @visited: 2D map of visited cells
  *
  * Description:
  * For each visited cell, neighbours are explored in the following order:
@@ -121,7 +123,7 @@ static int _backtracking_array(
 /**
  * backtracking_array - search for a path between two points in a 2D array
  *
- * @map: 2D array of walkable and unwalkable cells (1s and 0s, respectively)
+ * @map: 2D map of walkable and unwalkable cells (1s and 0s, respectively)
  * @rows: number of rows of map
  * @cols: number of columns of map
  * @start: coordinates of the starting point
