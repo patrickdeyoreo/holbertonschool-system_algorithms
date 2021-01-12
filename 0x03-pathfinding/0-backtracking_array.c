@@ -92,29 +92,28 @@ static int _backtracking_array(
 	point_t const *start, point_t const *target,
 	char **visited, queue_t *queue)
 {
-	int shifts[4][2] = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
-	unsigned int shift_index = 0;
+	static int const shifts[4][2] = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
 	point_t next = *start;
+	int x = next.x;
+	int y = next.y;
+	unsigned int shift_index = 0;
 
-	if (start->x < 0 || start->x >= cols)
+	if (x < 0 || x >= cols || y < 0 || y >= rows ||
+		map[y][x] == '1' || visited[y][x])
+	{
 		return (0);
-	if (start->y < 0 || start->y >= rows)
-		return (0);
-	if (map[start->y][start->x] == '1' || visited[start->y][start->x])
-		return (0);
-	visited[start->y][start->x] = 1;
-	printf("Checking coordinates [%d, %d]\n", start->x, start->y);
-	if (start->x == target->x && start->y == target->y)
+	}
+	visited[y][x] = 1;
+	printf("Checking coordinates [%d, %d]\n", x, y);
+	if (x == target->x && y == target->y)
 		return (queue_push_point(queue, start));
 	while (shift_index < 4)
 	{
-		next.x = start->x + shifts[shift_index][0];
-		next.y = start->y + shifts[shift_index][1];
+		next.x = x + shifts[shift_index][0];
+		next.y = y + shifts[shift_index][1];
 		if (_backtracking_array(
-			map, rows, cols, &next, target, visited, queue))
-		{
+				map, rows, cols, &next, target, visited, queue))
 			return (queue_push_point(queue, start));
-		}
 		shift_index += 1;
 	}
 	return (0);
@@ -168,7 +167,7 @@ queue_t *backtracking_array(
 		return (NULL);
 	}
 	if (!_backtracking_array(
-		map, rows, cols, start, target, visited, queue))
+			map, rows, cols, start, target, visited, queue))
 	{
 		map_delete(visited, rows);
 		queue_delete(queue);
