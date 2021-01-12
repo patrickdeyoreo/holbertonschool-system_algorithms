@@ -77,8 +77,8 @@ static char **map_create(unsigned int rows, unsigned int cols)
  * @cols: number of columns of map
  * @start: coordinates of the starting point
  * @target: coordinates of the target point
- * @queue: pointer to a queue of points in a path
  * @visited: 2D map of visited cells
+ * @queue: pointer to an empty queue
  *
  * Description:
  * For each visited cell, neighbours are explored in the following order:
@@ -90,7 +90,7 @@ static char **map_create(unsigned int rows, unsigned int cols)
 static int _backtracking_array(
 	char **map, int rows, int cols,
 	point_t const *start, point_t const *target,
-	queue_t *queue, char **visited)
+	char **visited, queue_t *queue)
 {
 	int shifts[4][2] = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
 	unsigned int shift_index = 0;
@@ -111,7 +111,7 @@ static int _backtracking_array(
 		next.x = start->x + shifts[shift_index][0];
 		next.y = start->y + shifts[shift_index][1];
 		if (_backtracking_array(
-			map, rows, cols, &next, target, queue, visited))
+			map, rows, cols, &next, target, visited, queue))
 		{
 			return (queue_push_point(queue, start));
 		}
@@ -141,8 +141,8 @@ queue_t *backtracking_array(
 	char **map, int rows, int cols,
 	point_t const *start, point_t const *target)
 {
-	queue_t *queue = NULL;
 	char **visited = NULL;
+	queue_t *queue = NULL;
 	int row = 0;
 
 	if (!map || !start || !target || rows < 1 || cols < 1 ||
@@ -158,20 +158,20 @@ queue_t *backtracking_array(
 		if (!map[row++])
 			return (NULL);
 	}
-	queue = queue_create();
-	if (!queue)
-		return (NULL);
 	visited = map_create(rows, cols);
 	if (!visited)
+		return (NULL);
+	queue = queue_create();
+	if (!queue)
 	{
-		queue_delete(queue);
+		map_delete(visited, rows);
 		return (NULL);
 	}
 	if (!_backtracking_array(
-		map, rows, cols, start, target, queue, visited))
+		map, rows, cols, start, target, visited, queue))
 	{
-		queue_delete(queue);
 		map_delete(visited, rows);
+		queue_delete(queue);
 		return (NULL);
 	}
 	map_delete(visited, rows);
