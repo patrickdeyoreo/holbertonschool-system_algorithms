@@ -5,22 +5,20 @@
 #include "queues.h"
 
 /**
- * queue_insert_point - create a point and insert it into a queue
+ * queue_push_point - create a point and push it to the front of a queue
  *
- * @queue: pointer to the queue to insert a point into
- * @x: x-coordinate
- * @y: y-coordinate
+ * @queue: pointer to the queue
+ * @coordinates: coordinates of the point to create
  *
  * Return: If memory allocation fails, return 0. Otherwise, return 1.
  */
-static int queue_insert_point(queue_t *queue, int x, int y)
+static int queue_push_point(queue_t *queue, point_t const *coordinates)
 {
 	point_t *point = malloc(sizeof(*point));
 
 	if (!point)
 		return (0);
-	point->x = x;
-	point->y = y;
+	*point = *coordinates;
 	if (!queue_push_front(queue, point))
 	{
 		free(point);
@@ -62,12 +60,11 @@ static char **map_create(unsigned int rows, unsigned int cols)
 	while (row < rows)
 	{
 		map[row] = calloc(cols, sizeof(*map[row]));
-		if (!map[row])
+		if (!map[row++])
 		{
 			map_delete(map, row);
 			return (NULL);
 		}
-		row += 1;
 	}
 	return (map);
 }
@@ -78,8 +75,7 @@ static char **map_create(unsigned int rows, unsigned int cols)
  * @map: 2D map of walkable and unwalkable cells (0s and 1s, respectively)
  * @rows: number of rows of map
  * @cols: number of columns of map
- * @x: x-coordinate of the starting point
- * @y: y-coordinate of the starting point
+ * @start: coordinates of the starting point
  * @target: coordinates of the target point
  * @queue: pointer to a queue of points in a path
  * @visited: 2D map of visited cells
@@ -92,28 +88,32 @@ static char **map_create(unsigned int rows, unsigned int cols)
  * Otherwise, return 1.
  */
 static int _backtracking_array(
-	char **map, int rows, int cols, int x, int y, point_t const *target,
+	char **map, int rows, int cols,
+	point_t const *start, point_t const *target,
 	queue_t *queue, char **visited)
 {
 	int shifts[4][2] = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
 	unsigned int shift_index = 0;
+	point_t next = *start;
 
-	if (x < 0 || x >= cols || y < 0 || y >= rows)
+	if (start->x < 0 || start->x >= cols)
 		return (0);
-	if (visited[y][x] || map[y][x] == '1')
+	if (start->y < 0 || start->y >= rows)
 		return (0);
-	visited[y][x] = 1;
-	printf("Checking coordinates [%d, %d]\n", x, y);
-	if (x == target->x && y == target->y)
-		return (queue_insert_point(queue, x, y));
+	if (map[start->y][start->x] == '1' || visited[start->y][start->x])
+		return (0);
+	visited[start->y][start->x] = 1;
+	printf("Checking coordinates [%d, %d]\n", start->x, start->y);
+	if (start->x == target->x && start->y == target->y)
+		return (queue_push_point(queue, start));
 	while (shift_index < 4)
 	{
-		if (_backtracking_array(map, rows, cols,
-				x + shifts[shift_index][0],
-				y + shifts[shift_index][1],
-				target, queue, visited))
+		next.x = start->x + shifts[shift_index][0];
+		next.y = start->y + shifts[shift_index][1];
+		if (_backtracking_array(
+			map, rows, cols, &next, target, queue, visited))
 		{
-			return (queue_insert_point(queue, x, y));
+			return (queue_push_point(queue, start));
 		}
 		shift_index += 1;
 	}
@@ -138,13 +138,14 @@ static int _backtracking_array(
  * point in a path from start to target.
  */
 queue_t *backtracking_array(
-	char **map, int rows, int cols, point_t const *start, point_t const *target)
+	char **map, int rows, int cols,
+	point_t const *start, point_t const *target)
 {
 	queue_t *queue = NULL;
 	char **visited = NULL;
 	int row = 0;
 
-	if (!map || rows < 1 || cols < 1 || !start || !target ||
+	if (!map || !start || !target || rows < 1 || cols < 1 ||
 		start->x < 0 || start->x >= cols ||
 		start->y < 0 || start->y >= rows ||
 		target->x < 0 || target->x >= cols ||
@@ -154,9 +155,8 @@ queue_t *backtracking_array(
 	}
 	while (row < rows)
 	{
-		if (!map[row])
+		if (!map[row++])
 			return (NULL);
-		row += 1;
 	}
 	queue = queue_create();
 	if (!queue)
@@ -168,8 +168,7 @@ queue_t *backtracking_array(
 		return (NULL);
 	}
 	if (!_backtracking_array(
-			map, rows, cols,
-			start->x, start->y, target, queue, visited))
+		map, rows, cols, start, target, queue, visited))
 	{
 		queue_delete(queue);
 		map_delete(visited, rows);

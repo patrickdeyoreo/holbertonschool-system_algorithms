@@ -22,7 +22,7 @@ static void print_free_path(queue_t *path)
 }
 
 /**
- * main - A simple graph to test Dijkstra's algorithm
+ * main - A simple graph to test A* algorithm
  *
  * Return: Either EXIT_SUCCESS or EXIT_FAILURE
  */
@@ -33,16 +33,16 @@ int main(void)
 	queue_t *path;
 
 	graph = graph_create();
-	graph_add_vertex(graph, "San Francisco", 0, 0);
-	graph_add_vertex(graph, "Los Angeles", 0, 0);
-	graph_add_vertex(graph, "Las Vegas", 0, 0);
-	start = graph_add_vertex(graph, "Seattle", 0, 0);
-	graph_add_vertex(graph, "Chicago", 0, 0);
-	graph_add_vertex(graph, "Washington", 0, 0);
-	graph_add_vertex(graph, "New York", 0, 0);
-	graph_add_vertex(graph, "Houston", 0, 0);
-	graph_add_vertex(graph, "Nashville", 0, 0);
-	target = graph_add_vertex(graph, "Miami", 0, 0);
+	graph_add_vertex(graph, "San Francisco", 37, -122);
+	graph_add_vertex(graph, "Los Angeles", 34, -118);
+	graph_add_vertex(graph, "Las Vegas", 36, -115);
+	start = graph_add_vertex(graph, "Seattle", 47, -122);
+	graph_add_vertex(graph, "Chicago", 41, -87);
+	graph_add_vertex(graph, "Washington", 38, -77);
+	graph_add_vertex(graph, "New York", 40, -74);
+	graph_add_vertex(graph, "Houston", 29, -95);
+	graph_add_vertex(graph, "Nashville", 36, -86);
+	target = graph_add_vertex(graph, "Miami", 25, -80);
 	graph_add_edge(graph, "San Francisco", "Los Angeles", 347, BIDIRECTIONAL);
 	graph_add_edge(graph, "San Francisco", "Las Vegas", 417, BIDIRECTIONAL);
 	graph_add_edge(graph, "Los Angeles", "Las Vegas", 228, BIDIRECTIONAL);
@@ -55,7 +55,7 @@ int main(void)
 	graph_add_edge(graph, "Nashville", "Washington", 566, BIDIRECTIONAL);
 	graph_add_edge(graph, "Nashville", "Miami", 818, BIDIRECTIONAL);
 
-	path = dijkstra_graph(graph, start, target);
+	path = a_star_graph(graph, start, target);
 	if (!path)
 	{
 		fprintf(stderr, "Failed to retrieve path\n");
