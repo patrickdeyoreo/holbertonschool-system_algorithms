@@ -73,32 +73,32 @@ static int _backtracking_graph(
  * @start: pointer to the starting vertex
  * @target: pointer to the target vertex
  *
- * Return: If memory allocation fails or no path from start to target is found,
- * return NULL. Otherwise, return a pointer to a queue in which each item is a
- * vertex in a path from start to target.
+ * Return: If memory allocation fails or no path from start to target is
+ * found, return NULL. Otherwise, return a pointer to a queue in which each
+ * item is a the content of a vertex in a path from start to target.
  */
 queue_t *backtracking_graph(
 	graph_t *graph, vertex_t const *start, vertex_t const *target)
 {
-	unsigned char *visited = NULL;
 	queue_t *queue = NULL;
+	unsigned char *visited = NULL;
 
 	if (!graph || !start || !target)
 		return (NULL);
-	visited = calloc(graph->nb_vertices, sizeof(*visited));
-	if (!visited)
-		return (NULL);
 	queue = queue_create();
 	if (!queue)
-	{
-		free(visited);
 		return (NULL);
-	}
-	if (!_backtracking_graph(graph, start, target, visited, queue))
+	visited = calloc(graph->nb_vertices, sizeof(*visited));
+	if (!visited)
 	{
-		free(visited);
 		queue_delete(queue);
 		return (NULL);
+	}
+	if (!_backtracking_graph(
+			graph, start, target, visited, queue))
+	{
+		queue_delete(queue);
+		queue = NULL;
 	}
 	free(visited);
 	return (queue);
