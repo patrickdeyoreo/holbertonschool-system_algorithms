@@ -46,7 +46,7 @@ static int _dijkstra_graph_queue_path(
  * @vertices: pointer to vertex set
  * @distance: pointer to vertex distances
  *
- * Return: If vertex set is empty, return NULL.
+ * Return: If vertex set is empty or no distances are defined, return NULL.
  * Otherwise, return a pointer to a vertex with the minimum distance.
  */
 static vertex_t const *_dijkstra_graph_extract_min(
@@ -54,13 +54,14 @@ static vertex_t const *_dijkstra_graph_extract_min(
 {
 	vertex_t const *vertex = NULL;
 	size_t index = 0;
+	size_t min = -1;
 
 	while (index < graph->nb_vertices)
 	{
-		if (vertices[index] && (!vertex ||
-				distance[index] < distance[vertex->index]))
+		if (vertices[index] && distance[index] < min)
 		{
 			vertex = vertices[index];
+			min = distance[index];
 		}
 		index += 1;
 	}
@@ -97,6 +98,8 @@ static int _dijkstra_graph(
 	{
 		printf("Checking %s, distance from %s is %lu\n",
 			v->content, start->content, distance[v->index]);
+		if (v->index == target->index)
+			break;
 		for (e = v->edges; e; e = e->next)
 		{
 			if (vertices[e->dest->index])
