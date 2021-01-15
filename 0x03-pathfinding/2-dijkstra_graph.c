@@ -21,21 +21,22 @@ static int _dijkstra_graph_queue_path(
 	vertex_t const *start, vertex_t const *target,
 	vertex_t const **previous, queue_t *queue)
 {
-	char *string = NULL;
+	char *data = NULL;
 
-	do {
-		string = strdup(target->content);
-		if (!string)
+	while (target)
+	{
+		data = strdup(target->content);
+		if (!data)
 			return (0);
-		if (!queue_push_front(queue, string))
+		if (!queue_push_front(queue, data))
 		{
-			free(string);
+			free(data);
 			return (0);
 		}
-	} while (target->index != start->index && (
-			target = previous[target->index]));
-	if (target)
-		return (1);
+		if (target->index == start->index)
+			return (1);
+		target = previous[target->index];
+	}
 	return (0);
 }
 
@@ -44,13 +45,13 @@ static int _dijkstra_graph_queue_path(
  *
  * @graph: pointer to the graph
  * @vertices: pointer to vertex set
- * @distance: pointer to vertex distances
+ * @distances: pointer to vertex distances
  *
  * Return: If vertex set is empty or no distances are defined, return NULL.
  * Otherwise, return a pointer to a vertex with the minimum distance.
  */
 static vertex_t const *_dijkstra_graph_extract_min(
-	graph_t *graph, vertex_t const **vertices, size_t *distance)
+	graph_t *graph, vertex_t const **vertices, size_t *distances)
 {
 	vertex_t const *vertex = NULL;
 	size_t index = 0;
@@ -58,10 +59,10 @@ static vertex_t const *_dijkstra_graph_extract_min(
 
 	while (index < graph->nb_vertices)
 	{
-		if (vertices[index] && distance[index] < min)
+		if (vertices[index] && distances[index] < min)
 		{
 			vertex = vertices[index];
-			min = distance[index];
+			min = distances[index];
 		}
 		index += 1;
 	}
@@ -78,7 +79,7 @@ static vertex_t const *_dijkstra_graph_extract_min(
  * @target: pointer to the target vertex
  * @vertices: pointer to vertex set
  * @previous: pointer to vertex parents
- * @distance: pointer to vertex distances
+ * @distances: pointer to vertex distances
  * @queue: pointer to a queue to populate
  *
  * Return: If memory allocation fails or no path from start to target
@@ -87,28 +88,28 @@ static vertex_t const *_dijkstra_graph_extract_min(
 static int _dijkstra_graph(
 	graph_t *graph, vertex_t const *start, vertex_t const *target,
 	vertex_t const **vertices, vertex_t const **previous,
-	size_t *distance, queue_t *queue)
+	size_t *distances, queue_t *queue)
 {
 	vertex_t const *v = NULL;
 	edge_t const *e = NULL;
 	size_t d = 0;
 
 	while ((v = _dijkstra_graph_extract_min(
-				graph, vertices, distance)))
+				graph, vertices, distances)))
 	{
 		printf("Checking %s, distance from %s is %lu\n",
-			v->content, start->content, distance[v->index]);
+			v->content, start->content, distances[v->index]);
 		if (v->index == target->index)
 			break;
 		for (e = v->edges; e; e = e->next)
 		{
 			if (vertices[e->dest->index])
 			{
-				d = distance[v->index] + e->weight;
-				if (d < distance[e->dest->index])
+				d = distances[v->index] + e->weight;
+				if (d < distances[e->dest->index])
 				{
-					distance[e->dest->index] = d;
 					previous[e->dest->index] = v;
+					distances[e->dest->index] = d;
 				}
 			}
 		}
@@ -136,7 +137,7 @@ queue_t *dijkstra_graph(
 	vertex_t const *vertex = NULL;
 	vertex_t const **vertices = NULL;
 	vertex_t const **previous = NULL;
-	size_t *distance = NULL;
+	size_t *distances = NULL;
 
 	if (!graph || !start || !target)
 		return (NULL);
@@ -145,30 +146,30 @@ queue_t *dijkstra_graph(
 		return (NULL);
 	vertices = calloc(graph->nb_vertices, sizeof(*vertices));
 	previous = calloc(graph->nb_vertices, sizeof(*previous));
-	distance = calloc(graph->nb_vertices, sizeof(*distance));
-	if (!vertices || !previous || !distance)
+	distances = calloc(graph->nb_vertices, sizeof(*distances));
+	if (!vertices || !previous || !distances)
 	{
 		queue_delete(queue);
 		free(vertices);
 		free(previous);
-		free(distance);
+		free(distances);
 		return (NULL);
 	}
 	for (vertex = graph->vertices; vertex; vertex = vertex->next)
 	{
-		distance[vertex->index] = -1;
 		vertices[vertex->index] = vertex;
+		distances[vertex->index] = -1;
 	}
-	distance[start->index] = 0;
+	distances[start->index] = 0;
 	if (!_dijkstra_graph(
 			graph, start, target,
-			vertices, previous, distance, queue))
+			vertices, previous, distances, queue))
 	{
 		queue_delete(queue);
 		queue = NULL;
 	}
 	free(vertices);
 	free(previous);
-	free(distance);
+	free(distances);
 	return (queue);
 }
