@@ -175,8 +175,10 @@ static int _a_star_graph(
 			}
 		}
 	}
-	return (_a_star_graph_queue_path(
-			start, target, previous, queue));
+	if (previous[target->index])
+		return (_a_star_graph_queue_path(
+				start, target, previous, queue));
+	return (0);
 }
 
 /**

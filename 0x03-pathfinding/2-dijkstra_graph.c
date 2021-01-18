@@ -114,8 +114,10 @@ static int _dijkstra_graph(
 			}
 		}
 	}
-	return (_dijkstra_graph_queue_path(
-			start, target, previous, queue));
+	if (previous[target->index])
+		return (_dijkstra_graph_queue_path(
+				start, target, previous, queue));
+	return (0);
 }
 
 /**
