@@ -1,0 +1,31 @@
+#ifndef _NARY_TREES_H_
+#define _NARY_TREES_H_
+
+#include <stddef.h>
+
+/**
+ * struct nary_tree_s - N-ary tree node structure
+ *
+ * @content: content of the node
+ * @parent: pointer to the parent node
+ * @nb_children: number of children
+ * @children: pointer to the head node of the children linked list
+ * @next: pointer to the next child in the parent's children linked list
+ */
+typedef struct nary_tree_s
+{
+	char			*content;
+	struct nary_tree_s	*parent;
+	size_t			nb_children;
+	struct nary_tree_s	*children;
+	struct nary_tree_s	*next;
+} nary_tree_t;
+
+nary_tree_t *nary_tree_insert(nary_tree_t *parent, char const *str);
+void nary_tree_delete(nary_tree_t *tree);
+size_t nary_tree_traverse(
+	nary_tree_t const *root, void (*action)(nary_tree_t const *, size_t));
+size_t nary_tree_diameter(nary_tree_t const *root);
+int path_exists(nary_tree_t const *root, char const * const *path);
+
+#endif /* _NARY_TREES_H_ */
