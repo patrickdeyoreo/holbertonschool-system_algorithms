@@ -23,7 +23,8 @@ static size_t _nary_tree_traverse(
 	if (!root)
 		return (0);
 
-	action(root, depth);
+	if (action)
+		action(root, depth);
 
 	for (child = root->children; child; child = child->next)
 	{
@@ -38,6 +39,9 @@ static size_t _nary_tree_traverse(
  *
  * @root: pointer to the root of the tree to traverse
  * @action: action to perform on each node in the tree
+ *
+ * Description: If action is NULL, simply traverse the tree pointed to by root
+ * and compute it's maximum depth.
  *
  * Return: depth of the deepest node in the tree
  */
