@@ -14,31 +14,28 @@ size_t _nary_tree_diameter(nary_tree_t const *root, size_t *diameter)
 {
 	nary_tree_t *child = NULL;
 	size_t max_height[2] = {0};
-	size_t new_height = 0;
+	size_t height = 0;
 
 	if (!root)
 		return (0);
 
 	for (child = root->children; child; child = child->next)
 	{
-		new_height = _nary_tree_diameter(child, diameter);
-		if (new_height > max_height[1])
+		height = _nary_tree_diameter(child, diameter);
+		if (height > max_height[1])
 		{
-			max_height[1] = new_height;
+			max_height[1] = height;
 		}
-		if (new_height > max_height[0])
+		if (height > max_height[0])
 		{
 			max_height[1] = max_height[0];
-			max_height[0] = new_height;
+			max_height[0] = height;
 		}
 	}
-	if (*diameter < max_height[0] + max_height[1] + 1)
-		*diameter = max_height[0] + max_height[1] + 1;
 
-	if (max_height[0] > max_height[1])
-		return (1 + max_height[0]);
-	else
-		return (1 + max_height[1]);
+	*diameter = MAX(*diameter, max_height[0] + max_height[1] + 1);
+
+	return (1 + max_height[0]);
 }
 
 /**
@@ -56,5 +53,6 @@ size_t nary_tree_diameter(nary_tree_t const *root)
 		return (0);
 
 	_nary_tree_diameter(root, &diameter);
+
 	return (diameter);
 }
